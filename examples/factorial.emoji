@@ -1,0 +1,13 @@
+// Factorial calculation using emoji syntax
+n 🍌 5 💩  // Calculate factorial of 5
+result 🍌 1 💩
+
+// Loop to calculate factorial
+i 🍌 1 💩
+🔄 i 🥴 n 🤪 1 💩  // while i <= n
+  result 🍌 result 🤯 i 💩  // result = result * i
+  i 🍌 i 🤪 1 💩  // i = i + 1
+🛑 💩
+
+// Print the result
+🦄 result 💩  // Should print 120 

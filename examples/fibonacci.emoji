@@ -1,0 +1,25 @@
+// Fibonacci sequence calculation 
+n 🍌 10 💩  // Calculate first 10 Fibonacci numbers
+
+// Initialize first two Fibonacci numbers
+a 🍌 0 💩
+b 🍌 1 💩
+
+// Print the first two numbers
+🦄 a 💩  // Print 0
+🦄 b 💩  // Print 1
+
+// Calculate and print the rest of the sequence
+count 🍌 2 💩  // We've already printed 2 numbers
+🔄 count 🥴 n 💩  // while count < n
+  // Calculate next Fibonacci number
+  next 🍌 a 🤪 b 💩  // next = a + b
+  
+  // Print the number
+  🦄 next 💩
+  
+  // Update values for next iteration
+  a 🍌 b 💩       // a = b
+  b 🍌 next 💩    // b = next
+  count 🍌 count 🤪 1 💩  // count = count + 1
+🛑 💩 

@@ -1,187 +1,176 @@
 import {
-  AssignmentStatement,
-  Expression,
-  ExpressionStatement,
-  PrintStatement,
+  AssignmentStatement, Expression, PrintStatement,
   Program,
   Statement,
+  WhileStatement
 } from "../ast/ast";
 import { Token, TokenType } from "../lexer/token";
 
 export class Parser {
   private tokens: Token[];
-  private position: number = 0;
-  private currentToken: Token;
+  private current: number = 0;
 
   constructor(tokens: Token[]) {
     this.tokens = tokens;
-    this.currentToken = tokens[0];
   }
 
-  private advance(): void {
-    this.position++;
-    if (this.position < this.tokens.length) {
-      this.currentToken = this.tokens[this.position];
-    }
+  private peek(): Token {
+    return this.tokens[this.current];
   }
 
-  private eat(tokenType: TokenType): Token {
-    if (this.currentToken.type === tokenType) {
-      const token = this.currentToken;
-      this.advance();
-      return token;
-    }
-
-    throw new Error(
-      `Unexpected token: expected ${TokenType[tokenType]}, got ${
-        TokenType[this.currentToken.type]
-      } ` +
-        `at line ${this.currentToken.line}, column ${this.currentToken.column}`
-    );
+  private advance(): Token {
+    const token = this.tokens[this.current];
+    this.current++;
+    return token;
   }
 
-  // program ::= statement*
+  private check(type: TokenType): boolean {
+    if (this.isAtEnd()) return false;
+    return this.peek().type === type;
+  }
+
+  private isAtEnd(): boolean {
+    return this.peek().type === TokenType.EOF;
+  }
+
+  private consume(type: TokenType, message: string): Token {
+    if (this.check(type)) return this.advance();
+    
+    const token = this.peek();
+    throw new Error(`${message} at line ${token.line}, column ${token.column}`);
+  }
+
   public parse(): Program {
     const statements: Statement[] = [];
-
-    while (this.currentToken.type !== TokenType.EOF) {
-      statements.push(this.parseStatement());
+    
+    while (!this.isAtEnd()) {
+      statements.push(this.statement());
     }
-
+    
     return {
       type: "Program",
-      statements,
+      statements
     };
   }
 
-  // statement ::= assignment_statement | print_statement | expression_statement
-  private parseStatement(): Statement {
-    if (
-      this.currentToken.type === TokenType.IDENTIFIER &&
-      this.tokens[this.position + 1]?.type === TokenType.ASSIGN
-    ) {
-      return this.parseAssignmentStatement();
-    } else if (this.currentToken.type === TokenType.PRINT) {
-      return this.parsePrintStatement();
+  private statement(): Statement {
+    if (this.check(TokenType.PRINT)) {
+      return this.printStatement();
     }
-
-    return this.parseExpressionStatement();
+    
+    if (this.check(TokenType.WHILE)) {
+      return this.whileStatement();
+    }
+    
+    return this.assignmentStatement();
   }
 
-  // assignment_statement ::= identifier '=' expression ';'
-  private parseAssignmentStatement(): AssignmentStatement {
-    const identifier = this.eat(TokenType.IDENTIFIER).value;
-    this.eat(TokenType.ASSIGN);
-    const value = this.parseExpression();
-    this.eat(TokenType.SEMICOLON);
+  private printStatement(): PrintStatement {
+    this.advance(); // Consume 🦄
+    
+    const expression = this.expression();
+    this.consume(TokenType.SEMICOLON, "Expected '💩' after expression");
+    
+    return {
+      type: "PrintStatement",
+      expression
+    };
+  }
 
+  private assignmentStatement(): AssignmentStatement {
+    const identifier = this.consume(TokenType.IDENTIFIER, "Expected variable name").value;
+    this.consume(TokenType.ASSIGN, "Expected '🍌' after variable name");
+    
+    const value = this.expression();
+    this.consume(TokenType.SEMICOLON, "Expected '💩' after expression");
+    
     return {
       type: "AssignmentStatement",
       identifier,
-      value,
+      value
     };
   }
 
-  // print_statement ::= 'print' expression ';'
-  private parsePrintStatement(): PrintStatement {
-    this.eat(TokenType.PRINT);
-    const expression = this.parseExpression();
-    this.eat(TokenType.SEMICOLON);
-
+  private whileStatement(): WhileStatement {
+    this.advance(); // Consume 🔄
+    
+    const condition = this.expression();
+    this.consume(TokenType.SEMICOLON, "Expected '💩' after while condition");
+    
+    const body: Statement[] = [];
+    
+    while (!this.check(TokenType.END) && !this.isAtEnd()) {
+      body.push(this.statement());
+    }
+    
+    this.consume(TokenType.END, "Expected '🛑' to end while loop");
+    this.consume(TokenType.SEMICOLON, "Expected '💩' after end of while loop");
+    
     return {
-      type: "PrintStatement",
-      expression,
+      type: "WhileStatement",
+      condition,
+      body
     };
   }
 
-  // expression_statement ::= expression ';'
-  private parseExpressionStatement(): ExpressionStatement {
-    const expression = this.parseExpression();
-    this.eat(TokenType.SEMICOLON);
-
-    return {
-      type: "ExpressionStatement",
-      expression,
-    };
+  private expression(): Expression {
+    return this.additive();
   }
 
-  // expression ::= term (('+' | '-') term)*
-  private parseExpression(): Expression {
-    let left = this.parseTerm();
-
-    while (
-      this.currentToken.type === TokenType.PLUS ||
-      this.currentToken.type === TokenType.MINUS
-    ) {
-      const operator = this.currentToken.value;
-      this.advance();
-      const right = this.parseTerm();
-
-      left = {
+  private additive(): Expression {
+    let expr = this.multiplicative();
+    
+    while (this.check(TokenType.ADD) || this.check(TokenType.SUBTRACT)) {
+      const operator = this.advance().value;
+      const right = this.multiplicative();
+      
+      expr = {
         type: "BinaryExpression",
-        left,
+        left: expr,
         operator,
-        right,
+        right
       };
     }
-
-    return left;
+    
+    return expr;
   }
 
-  // term ::= factor (('*' | '/') factor)*
-  private parseTerm(): Expression {
-    let left = this.parseFactor();
-
-    while (
-      this.currentToken.type === TokenType.MULTIPLY ||
-      this.currentToken.type === TokenType.DIVIDE
-    ) {
-      const operator = this.currentToken.value;
-      this.advance();
-      const right = this.parseFactor();
-
-      left = {
+  private multiplicative(): Expression {
+    let expr = this.primary();
+    
+    while (this.check(TokenType.MULTIPLY)) {
+      const operator = this.advance().value;
+      const right = this.primary();
+      
+      expr = {
         type: "BinaryExpression",
-        left,
+        left: expr,
         operator,
-        right,
+        right
       };
     }
-
-    return left;
+    
+    return expr;
   }
 
-  // factor ::= number | identifier | '(' expression ')'
-  private parseFactor(): Expression {
-    const token = this.currentToken;
-
-    switch (token.type) {
-      case TokenType.NUMBER:
-        this.advance();
-        return {
-          type: "NumberLiteral",
-          value: parseInt(token.value, 10),
-        };
-
-      case TokenType.IDENTIFIER:
-        this.advance();
-        return {
-          type: "Identifier",
-          name: token.value,
-        };
-
-      case TokenType.LPAREN:
-        this.advance();
-        const expression = this.parseExpression();
-        this.eat(TokenType.RPAREN);
-        return expression;
-
-      default:
-        throw new Error(
-          `Unexpected token: ${TokenType[token.type]} at line ${
-            token.line
-          }, column ${token.column}`
-        );
+  private primary(): Expression {
+    if (this.check(TokenType.NUMBER)) {
+      const token = this.advance();
+      return {
+        type: "NumberLiteral",
+        value: parseInt(token.value)
+      };
     }
+    
+    if (this.check(TokenType.IDENTIFIER)) {
+      const token = this.advance();
+      return {
+        type: "Identifier",
+        name: token.value
+      };
+    }
+    
+    const token = this.peek();
+    throw new Error(`Unexpected token: ${token.value} at line ${token.line}, column ${token.column}`);
   }
 }

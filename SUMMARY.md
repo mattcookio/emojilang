@@ -1,4 +1,4 @@
-# MiniLang Compiler Summary
+# emojilang Compiler Summary
 
 We've created a minimal compiled programming language that demonstrates the core concepts of a compiler. Here's a summary of the components and how they work together:
 
@@ -87,7 +87,7 @@ We've created a minimal compiled programming language that demonstrates the core
 
 ## Language Features
 
-MiniLang is intentionally minimal but demonstrates the essential concepts:
+emojilang is intentionally minimal but demonstrates the essential concepts:
 
 - Integer literals
 - Variables (implicitly defined on first use)

@@ -1,12 +1,12 @@
 {
-  "name": "minilang-compiler",
+  "name": "emojilang-compiler",
   "version": "1.0.0",
   "description": "A minimal compiled programming language",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "node dist/index.js examples/test.mini"
+    "compile": "node dist/index.js"
   },
   "dependencies": {},
   "devDependencies": {

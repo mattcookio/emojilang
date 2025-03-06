@@ -1,0 +1,47 @@
+{
+  "name": "emojilang-syntax",
+  "displayName": "EmojiLang Syntax Highlighter",
+  "description": "Syntax highlighting for the EmojiLang programming language with goofy emoji operators",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "publisher": "emojilang",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/emojilang-vscode"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "emoji",
+    "language",
+    "syntax",
+    "highlighting",
+    "compiler"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "emojilang",
+        "aliases": [
+          "EmojiLang",
+          "emojilang"
+        ],
+        "extensions": [
+          ".emoji"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "emojilang",
+        "scopeName": "source.emojilang",
+        "path": "./syntaxes/emojilang.tmLanguage.json"
+      }
+    ]
+  }
+}

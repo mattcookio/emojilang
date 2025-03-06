@@ -1,4 +1,4 @@
-// Abstract Syntax Tree node types
+// Abstract Syntax Tree node types for goofy emoji language
 
 export interface ASTNode {
   type: string;
@@ -9,10 +9,7 @@ export interface Program extends ASTNode {
   statements: Statement[];
 }
 
-export type Statement =
-  | AssignmentStatement
-  | ExpressionStatement
-  | PrintStatement;
+export type Statement = AssignmentStatement | PrintStatement | WhileStatement;
 
 export interface AssignmentStatement extends ASTNode {
   type: "AssignmentStatement";
@@ -20,14 +17,15 @@ export interface AssignmentStatement extends ASTNode {
   value: Expression;
 }
 
-export interface ExpressionStatement extends ASTNode {
-  type: "ExpressionStatement";
-  expression: Expression;
-}
-
 export interface PrintStatement extends ASTNode {
   type: "PrintStatement";
   expression: Expression;
+}
+
+export interface WhileStatement extends ASTNode {
+  type: "WhileStatement";
+  condition: Expression;
+  body: Statement[];
 }
 
 export type Expression = BinaryExpression | NumberLiteral | Identifier;
@@ -35,7 +33,7 @@ export type Expression = BinaryExpression | NumberLiteral | Identifier;
 export interface BinaryExpression extends ASTNode {
   type: "BinaryExpression";
   left: Expression;
-  operator: string; // '+', '-', '*', '/'
+  operator: string; // '🤪', '🥴', '🤯'
   right: Expression;
 }
 

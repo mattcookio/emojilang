@@ -1,17 +1,16 @@
-// Token types for our minimal language
+// Token types for our goofy emoji-based minimal language
 export enum TokenType {
-  NUMBER, // Integer numbers
+  NUMBER,     // Integer numbers
   IDENTIFIER, // Variable names
-  PLUS, // +
-  MINUS, // -
-  MULTIPLY, // *
-  DIVIDE, // /
-  ASSIGN, // =
-  SEMICOLON, // ;
-  LPAREN, // (
-  RPAREN, // )
-  PRINT, // 'print' keyword
-  EOF, // End of file
+  ADD,        // 🤪
+  SUBTRACT,   // 🥴
+  MULTIPLY,   // 🤯
+  ASSIGN,     // 🍌
+  PRINT,      // 🦄
+  SEMICOLON,  // 💩
+  WHILE,      // 🔄
+  END,        // 🛑
+  EOF,        // End of file
 }
 
 export interface Token {

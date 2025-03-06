@@ -1,0 +1,10 @@
+Icon Description:
+
+Create a 128x128 pixel icon with the following elements:
+1. Background: Gradient from light blue (#87CEEB) to light purple (#B19CD9)
+2. Center: Large emoji "🤪" (crazy face) taking up about 60% of the icon
+3. Bottom right corner: Small emoji "💩" (poop) at about 20% size
+4. Top left corner: Small emoji "🦄" (unicorn) at about 20% size
+5. Add a thin white border around the entire icon
+
+This icon represents the EmojiLang programming language with its goofy emoji operators. 
