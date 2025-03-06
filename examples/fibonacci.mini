@@ -1,0 +1,44 @@
+// Calculate the first 10 Fibonacci numbers
+a = 0;
+b = 1;
+print a;
+print b;
+
+// Calculate the next 8 Fibonacci numbers
+c = a + b;
+print c;
+a = b;
+b = c;
+
+c = a + b;
+print c;
+a = b;
+b = c;
+
+c = a + b;
+print c;
+a = b;
+b = c;
+
+c = a + b;
+print c;
+a = b;
+b = c;
+
+c = a + b;
+print c;
+a = b;
+b = c;
+
+c = a + b;
+print c;
+a = b;
+b = c;
+
+c = a + b;
+print c;
+a = b;
+b = c;
+
+c = a + b;
+print c; 
