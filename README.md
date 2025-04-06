@@ -1,98 +1,148 @@
 # emojilang
 
-A minimal compiled programming language that demonstrates the core concepts of a compiler. This project is designed as a learning tool to understand how compilers work.
+A minimal compiled programming language that demonstrates how compilers work. Perfect for learning about language implementation and compilation.
 
-## Overview
+## How Compilers Work
 
-emojilang is a simple programming language that compiles to x86-64 assembly. It demonstrates the key components of a compiler:
+A compiler is like a translator that converts your code into something your computer can understand. Here's the process:
 
-- **Lexer**: Breaks source code into tokens
-- **Parser**: Builds an Abstract Syntax Tree (AST) from tokens
-- **Code Generator**: Converts the AST to x86-64 assembly
-- **Compiler Driver**: Orchestrates the compilation process
+1. **Lexer** (Word Processor)
 
-### Code Generation Approaches
+   - Reads your code character by character
+   - Groups characters into meaningful tokens (like words in a sentence)
+   - Handles whitespace and tracks line/column information
+   - Example: `x = 42` becomes `[IDENTIFIER "x", ASSIGN "=", NUMBER "42"]`
 
-This project uses a traditional approach of generating assembly code as an intermediate step. However, modern compilers often use different strategies:
+2. **Parser** (Grammar Checker)
 
-1. **Direct Machine Code Generation** (Modern Approach)
+   - Implements a recursive descent parser
+   - Checks if your code follows the language's rules
+   - Builds a tree structure (AST) showing how operations relate
+   - Handles operator precedence (\* before +)
+   - Example: `x = 42` becomes:
+     ```
+     AssignmentStatement
+     ├── identifier: "x"
+     └── value: NumberLiteral(42)
+     ```
 
-   - Compilers like LLVM, GCC, and Rust generate machine code directly
-   - Benefits: Better optimization opportunities, no need for external assembler
-   - Examples:
-     - Rust uses LLVM to generate optimized machine code
-     - Go's compiler generates machine code directly
-     - Modern JavaScript engines (V8, SpiderMonkey) use JIT compilation to machine code
+3. **Code Generator** (Translator)
 
-2. **Assembly Generation** (Traditional Approach)
-   - Used in this project for educational purposes
-   - Benefits: Easier to understand and debug, human-readable output
-   - Examples:
-     - Early C compilers generated assembly before linking
-     - Some educational compilers (like this one) use this approach
-     - NASM and GAS (GNU Assembler) are still used in some specialized contexts
+   - Traverses the AST and generates x86-64 assembly
+   - Manages variable allocation on the stack
+   - Example: `x = 42` becomes:
+     ```assembly
+     mov rax, 42
+     mov QWORD PTR [rbp-8], rax
+     ```
+
+4. **Assembler & Linker** (Builder)
+   - **Assembler (NASM)**: Converts assembly to machine code
+     - Creates binary object files (like a puzzle with missing pieces)
+     - Keeps track of where things are (symbol tables)
+     - Notes where things need to be connected (relocation info)
+   - **Linker (ld)**: Creates the final executable
+     - Organizes the program's memory:
+       - `.text`: Where the code lives
+       - `.data`: Where variables start with values
+       - `.bss`: Where variables start as zero
+     - Connects everything together (like completing a puzzle)
+     - Creates the program's startup instructions
+     - Makes sure the operating system can run it
+
+### Modern vs Traditional Compilation
+
+1. **Direct Machine Code** (Modern)
+
+   - Compilers like Rust, Go, and JavaScript generate machine code directly
+   - Benefits: Faster execution, better optimization
+   - Example: Rust's compiler creates highly optimized code in one step
+
+2. **Assembly Generation** (Traditional)
+   - This project uses this approach for clarity
+   - Benefits: Easier to understand and debug
+   - Example: Early C compilers worked this way
 
 ## Language Features
 
-The language is intentionally minimal but includes:
+- Numbers: `42`
+- Variables: `x = 42`
+- Math: `x + y * 3` (with proper precedence)
+- Print: `print x`
+- While loops: `while x > 0 { ... }`
 
-- Integer literals
-- Variables (implicitly defined on first use)
-- Basic arithmetic operations (+, -, \*, /)
-- Expressions with proper precedence
-- Statements separated by semicolons
+## Quick Start
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v14 or later)
-- NASM (Netwide Assembler)
-- GNU Linker (ld)
-
-### Installation
-
-1. Clone the repository:
+1. Install:
 
    ```bash
    git clone https://github.com/mattcookio/emojilang.git
    cd emojilang
-   ```
-
-2. Install dependencies:
-
-   ```bash
    npm install
    ```
 
-3. Build the project:
-   ```bash
-   npm run build
+2. Write code in `example.asm`:
+
+   ```asm
+   x = 42
+   print x
    ```
 
-### Usage
-
-1. Write your emojilang code in a `.asm` file (see `examples/` directory for samples)
-2. Compile your code:
+3. Compile and run:
    ```bash
-   npm run compile yourfile.asm
+   npm run compile example.asm
+   ./example
    ```
-3. The compiler will generate an executable with the same name as your source file
 
 ## Project Structure
 
-- `src/`: Source code for the compiler
-  - `lexer/`: Tokenization logic
-  - `parser/`: Parsing and AST generation
-  - `codegen/`: Assembly code generation
-  - `index.ts`: Main compiler driver
-- `examples/`: Sample emojilang programs
-- `emojilang-vscode/`: VS Code extension for emojilang
+```
+emojilang/
+├── src/           # Compiler source
+│   ├── lexer/    # Token creation
+│   ├── parser/   # Parsing logic
+│   ├── ast/      # Abstract Syntax Tree
+│   └── codegen/  # Assembly output
+├── examples/      # Sample programs
+└── emojilang-vscode/  # VS Code extension with syntax highlighting
+```
 
-## Learning Resources
+## Editor Support
 
-For a detailed explanation of how the compiler works, check out `SUMMARY.md`.
+### VS Code Extension
+
+The project includes a dedicated VS Code extension (`emojilang-vscode`) that provides:
+
+- Syntax highlighting for all emoji operators:
+  - Assignment: 🍌
+  - Addition: 🤪
+  - Subtraction: 🥴
+  - Multiplication: 🤯
+  - Print: 🦄
+  - While loop: 🔄
+  - Loop end: 🛑
+  - Statement terminator: 💩
+- Number and identifier highlighting
+- Comment support
+- Basic language features
+
+To install the extension:
+
+1. Open VS Code
+2. Go to Extensions (Ctrl+Shift+X or Cmd+Shift+X)
+3. Search for "emojilang"
+4. Click Install
+
+## Future Extensions
+
+The compiler could be extended with:
+
+- More data types (strings, booleans, arrays)
+- Control flow (if/else, loops)
+- Functions and scope
+- Type checking
+- Optimization passes
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE)
